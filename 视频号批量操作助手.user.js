@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         视频号快捷助手
+// @name         博虎视频号快捷助手
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.11
 // @description  视频号一些快捷处理
 // @author       Longway
 // @match        https://channels.weixin.qq.com/platform/*
@@ -64,17 +64,26 @@
                 }
             },
         });
+        var wait_second = 1500  //等待时间
         $("#removeAll").click(function(){
             var r = confirm("确定删除所有视频吗？")
             if (r==true){
                 const ids = GM_getValue("ids")
-                ids.forEach(item => {
-                    goRemove(item)
-                });
-                setTimeout(()=>{
-                    alert('全部删除成功！')
-                    location.reload();
-                },4000)
+                if(ids.length == 0){
+                    //无可进行操作动态时提示
+                    alert('没有可以操作的动态！')
+                }else{
+                    $('#removeAll').attr('disabled',true)
+                    ids.forEach(item => {
+                        goRemove(item)
+                    });
+                    //根据条数动态调整延时时间
+                    wait_second = wait_second * (parseInt(ids.length/20)+1)
+                    setTimeout(()=>{
+                        alert('全部删除成功！')
+                        location.reload();
+                    },wait_second)
+                }
                 
             }
             
@@ -83,14 +92,23 @@
             var r = confirm("确定全部设置为自己可见吗？")
             if (r==true){
                 const ids = GM_getValue("ids")
-                ids.forEach(item => {
-                    goMyself(item)
-                });
+                if(ids.length == 0){
+                    //无可进行操作动态时提示
+                    alert('没有可以操作的动态！')
+                }else{
+                    $('#myselfAll').attr('disabled',true)
+                    ids.forEach(item => {
+                        goMyself(item)
+                    });
+                    //根据条数动态调整延时时间
+                    wait_second = wait_second * (parseInt(ids.length/20)+1)
+                    setTimeout(()=>{
+                        alert('设置自己可见成功')
+                        location.reload();
+                    },wait_second)
+                    
+                }
                 
-                setTimeout(()=>{
-                    alert('设置自己可见成功')
-                    location.reload();
-                },2800)
                 
             }
             
@@ -100,14 +118,21 @@
             var r = confirm("确定全部设置为公开可见吗？")
             if (r==true){
                 const ids = GM_getValue("ids")
-                ids.forEach(item => {
-                    goPublic(item)
-                });
-                setTimeout(()=>{
-                    alert('设置公开可见成功')
-                    location.reload();
-                },2800)
-                
+                if(ids.length == 0){
+                    //无可进行操作动态时提示
+                    alert('没有可以操作的动态！')
+                }else{
+                    $('#publicAll').attr('disabled',true)
+                    ids.forEach(item => {
+                        goPublic(item)
+                    });
+                    //根据条数动态调整延时时间
+                    wait_second = wait_second * (parseInt(ids.length/20)+1)
+                    setTimeout(()=>{
+                        alert('设置公开可见成功')
+                        location.reload();
+                    },wait_second)
+                }
                 
             }
             
@@ -125,16 +150,7 @@
                     "Content-Type": "application/json",
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
                 },
-                data:d,
-                // responseType: "json",
-                // onload(response) {
-                    
-                //     if ((response.status >= 200 && response.status < 300) || response.status == 304) {
-                //         GM_log(response.response)
-                //     }else{
-                //         GM_log("无结果",response)
-                //     }
-                // },
+                data:d
             });
         }
         function goPublic(item){
@@ -149,16 +165,7 @@
                     "Content-Type": "application/json",
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
                 },
-                data:d,
-                // responseType: "json",
-                // onload(response) {
-                    
-                //     if ((response.status >= 200 && response.status < 300) || response.status == 304) {
-                //         GM_log(response.response)
-                //     }else{
-                //         GM_log("无结果",response)
-                //     }
-                // },
+                data:d
             });
         }
         function goRemove(item){
@@ -185,7 +192,7 @@
             });
         }
 
-    }, 2800);
+    }, 4000);
     GM_addStyle ( `
         .green { background-color:#07c160;color:#fff}
     ` );
