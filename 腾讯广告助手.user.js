@@ -22,19 +22,20 @@
     //页面添加操作面板
     var panel = '<div class="z_panel"> \
                     <ul>\
-                        <li id="a" onClick="filterMine()">筛选我的</li> \
-                        <li>筛选我的2</li> \
+                        <li id="b" onClick="filterMine1()">筛选清兄账号</li> \
+                        <li id="a" onClick="filterMine()">筛选建聪账号</li> \
                     </ul>\
                 </div>'
     //我的广告主id
-    var ids = "29626424, \
+    var ids = "  \
+                29661424, \
+                29626424, \
+                29585684, \
                 29626341, \
                 29626328, \
                 29626294, \
                 29585586, \
-                29585584, \
                 29585583, \
-                29585581, \
                 29546080, \
                 29515640, \
                 29515633, \
@@ -43,7 +44,31 @@
                 27172119, \
                 27139497, \
                 27127846, \
-                27127845"
+                27127845  \
+                "
+    var ids_b = "  \
+                29626227,  \
+                27139498,  \
+                27020194,  \
+                29626122,  \
+                29585585,  \
+                27078870,  \
+                27014719,  \
+                27127842,  \
+                26996279,  \
+                26776193,  \
+                26869164,  \
+                27127843,  \
+                29532577,  \
+                29626261,  \
+                26937759,  \
+                27014720,  \
+                26396256,  \
+                29628396,  \
+                26924690,  \
+                26634187,  \
+                27195721  \
+                "
     //根据url显示不同功能
     function handleUrl(){
         if(current_url.indexOf("advertiser-list/") != -1){
@@ -54,8 +79,7 @@
             setTimeout(()=>{ 
                 $(".base-page").append(panel)
                 GM_log('添加投放广告页面按钮成功！！')
-                
-                //筛选我的
+                //筛选建聪账号
                 unsafeWindow.filterMine = function() {
                     var uri = current_url.split('?')[0]
                     var str = getQueryString("params")
@@ -67,6 +91,19 @@
                     window.location.href = url
                 };
                 document.getElementById('a').onclick = 'window.filterMine()'
+                //筛选清兄账号
+                unsafeWindow.filterMine1 = function() {
+                    var uri = current_url.split('?')[0]
+                    var str = getQueryString("params")
+                    var params = eval('(' + str + ')')
+                    params['uid_list'] = ids_b
+                    params = JSON.stringify(params)
+                    GM_log(params)
+                    var url = uri + '?params=' + params
+                    window.location.href = url
+                };
+                document.getElementById('b').onclick = 'window.filterMine1()'
+                
             },3000)
             
         }
