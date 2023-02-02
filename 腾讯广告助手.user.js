@@ -11,6 +11,7 @@
 // @grant        unsafeWindow
 // @grant        GM_log
 // @grant        GM_xmlhttpRequest
+// @grant        GM.xmlHttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addStyle
@@ -27,23 +28,42 @@
                 </div>'
     //我的广告主id
     var ids = "  \
-                29661424, \
-                29626424, \
-                29585684, \
-                29626341, \
-                29626328, \
-                29626294, \
-                29585586, \
-                29585583, \
-                29546080, \
-                29515640, \
                 29515633, \
-                27195720, \
+                29626424, \
                 27195719, \
-                27172119, \
                 27139497, \
-                27127846, \
-                27127845  \
+                29661424, \
+                29832728, \
+                29585684, \
+                29906897, \
+                29626294, \
+                29951953, \
+                29951952, \
+                29951938, \
+                29951937, \
+                29951936, \
+                29951930, \
+                29951929, \
+                29951928, \
+                29951920, \
+                29951919, \
+                29951918, \
+                29951869, \
+                29951868, \
+                29951867, \
+                29951866, \
+                29951865, \
+                29951864, \
+                29951863, \
+                29951862, \
+                29951861, \
+                29951860, \
+                29951858, \
+                29951857, \
+                29951856, \
+                29951855, \
+                29951854, \
+                29936638  \
                 "
     var ids_b = "  \
                 29626227,  \
@@ -75,7 +95,7 @@
         }
         if(current_url.indexOf("advertising/") != -1){
             GM_log('投放广告页面')
-            setTimeout(()=>{ 
+            setTimeout(()=>{
                 $(".base-page").append(panel)
                 GM_log('添加投放广告页面按钮成功！！')
                 //筛选建聪账号
@@ -102,15 +122,15 @@
                     window.location.href = url
                 };
                 document.getElementById('b').onclick = 'window.filterMine1()'
-                
+
             },3000)
-            
+
         }
         if(current_url.indexOf("admanage/campaign") != -1){
             GM_log('账户推广计划页面')
         }
     }
-    
+
     handleUrl()
     //监控网址变化
     window.addEventListener('pushState', function(e) {
@@ -136,7 +156,7 @@
             z-index:99999
         }
         .z_panel ul{
-            
+
         }
         .z_panel ul li{
             width: 100px;
