@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         腾讯广告复制助手
-// @version      0.1
+// @version      0.2
 // @description  腾讯广告复制助手
 // @author       Longway
 // @match        https://ad.qq.com/atlas/*
@@ -19,75 +19,39 @@
 (function(){
     'use strict';
     var current_url = document.URL
-
+    //设置条数
+    var num = 20
     //页面添加操作面板
     var panel = '<div class="z_panel"> \
                     <ul>\
-                        <li id="b" onClick="goCopy()">批量复制30条</li> \
+                        <li onClick="goCopy()">批量复制'+num+'条</li> \
                     </ul>\
                 </div>'
-    //我的广告主id
-    var ids = "  \
-                30990983,\
-                30911123,\
-                30842261,\
-                30842260,\
-                30990940,\
-                30809538,\
-                30842256,\
-                31298983,\
-                30990936,\
-                31226956,\
-                31298988,\
-                30842263,\
-                30864410,\
-                30990977,\
-                31226955,\
-                31226957,\
-                31037142,\
-                30911562,\
-                31226954,\
-                30911563,\
-                30477625,\
-                30477603,\
-                30185376,\
-                30503016,\
-                29936800,\
-                30503089,\
-                29936638,\
-                29951862,\
-                30508959,\
-                31340191,\
-                31345480,\
-                31340704,\
-                31342148  \
-                "
-    var copy_options = {}
+    
     //根据url显示不同功能
-    function handleUrl(){
-        //获取广告组id
+    function handleCopy(){
+        //请求参数
+        var copy_options = ''
+        //url携带参数初始化
         var g_tk =''
         var mp_tk =''
         var owner = ''
         var advertiser_id = ''
         var trace_id = ''
         var g_trans_id = ''
-        GM_log('网址拆分',current_url)
+        //复制累计值
+        var total = 0
+        //筛选广告复制页面
         if(current_url.indexOf("/create?id=") != -1){
             $('body').append(panel)
-            GM_log('广告创建页面')
-            // const originOpen = XMLHttpRequest.prototype.open;
-            // // GM_log('originOpen',originOpen)
-            // originOpen = function (_, url) {
-            //     GM_log('网址',url)
-            // };
+            GM_log('打开了广告复制页面！')
             const originOpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.mySend = XMLHttpRequest.prototype.send;
             XMLHttpRequest.prototype.open = function (_, url) {
                 if(url.indexOf('/order/create') != -1){
                     var url_arr = url.split('?')[1]
                     var url_arr1 = url_arr.split('&')
-                    GM_log('url_arr1 ',url_arr1)
+                    // 提取网址参数
                     for(let i in url_arr1) {
                         let v = url_arr1[i]
                         if(v.indexOf('g_tk=') != -1){
@@ -104,16 +68,12 @@
                             g_trans_id = v.split('=')[1]
                         }
                     }
-                    // let uurl = "https://ad.qq.com/ap/order/create?g_tk="+g_tk+"&mp_tk="+mp_tk+"&owner="+owner+"&advertiser_id="+advertiser_id+"&trace_id="+trace_id+"&g_trans_id="+g_trans_id+"&unicode=1&post_format=json"
-                    // GM_log('捕获成功',uurl)
                     XMLHttpRequest.prototype.send = function (body) {
-                        // let options = JSON.parse(body)
-                        //判断数组是否存在dynamic_creative_list和create_time
-                        if(body.indexOf('dynamic_creative_list') != -1 && body.indexOf('create_time') == -1){
-                            // GM_log('有包含！',body)
+                        //判断数组是否存在creatives和create_time，有creatives无create_time为所需
+                        if(body.indexOf('creatives') != -1 && body.indexOf('create_time') == -1){
                             copy_options = body
+                            // GM_log('获取到body',body)
                         }
-                        // GM_log('捕获成功BODY！',options['dynamic_creative_list'])
                         this.mySend(body);
                     };
                 }
@@ -122,14 +82,27 @@
             };
             unsafeWindow.goCopy = function() {
                 //开始复制
-                GM_log('开始复制~~~~')
+                GM_log('###开始执行复制###')
+                if(copy_options == ''){
+                    unsafeWindow.alert('###没有获取到数据包！请先提交复制一条数据###')
+                    return false
+                }
                 var copy_options1 = JSON.parse(copy_options)
+                GM_log('数据',copy_options1)
                 var old_name = copy_options1.adgroup.adgroup_name
-                // XMLHttpRequest.prototype.send(data)
                 var r_url = "https://ad.qq.com/ap/order/create?g_tk="+g_tk+"&mp_tk="+mp_tk+"&owner="+owner+"&advertiser_id="+advertiser_id+"&trace_id="+trace_id+"&g_trans_id="+g_trans_id+"&unicode=1&post_format=json"
-                for(let i=1;i<11;i++){
-                    copy_options1.adgroup.adgroup_name = old_name +'-复制' + i
-                    // GM_log('格式化',copy_options1.adgroup.adgroup_name)
+                
+                for(let i=1;i<=num;i++){
+                    let sn = 0
+                    total += 1
+                    if(total < 10){
+                        //补0
+                        sn = '0' + total
+                    }else{
+                        sn = total
+                    }
+                    
+                    copy_options1.adgroup.adgroup_name = old_name +'-副本' + sn
                     let data = JSON.stringify(copy_options1)
                     GM_xmlhttpRequest({
                         url: r_url,
@@ -142,29 +115,19 @@
                         responseType: "json",
                         onload(response) {
                             if ((response.status >= 200 && response.status < 300) || response.status == 304) {
+                                GM_log('当前序号',i)
                                 GM_log(response.response)
-                                // let r = response.response
-                                // if(r.errCode == 0){
-                                //     let totalCount = r.data.totalCount
-                                //     let lists = r.data.list
-                                //     let ids = []
-                                //     for (var i = 0; i < lists.length; i++) {
-                                //         ids.push(lists[i].objectId)
-                                //     }
-                                //     GM_setValue("ids", ids)
-                                // }else{
-                                    
-                                //     GM_log(r.errMsg)
-                                // }
+                                if(i == num){
+                                    let result = '复制'+num+'条完毕！'
+                                    // GM_log(result)
+                                    unsafeWindow.alert(result)
+                                }
                             }else{
                                 GM_log("无结果",response)
                             }
                         },
                     });
-                    if(i == 11){
-                        GM_log('复制11条完毕！')
-                        unsafeWindow.alert('成功复制40条！')
-                    }
+                    
                 }
                 
             }
@@ -172,23 +135,8 @@
         }
     }
 
+    handleCopy()
 
-    handleUrl()
-    //监控网址变化
-    window.addEventListener('pushState', function(e) {
-        current_url = document.URL
-        // GM_log('网址改变了',current_url)
-        handleUrl()
-    });
-    //url参数获取
-    function getQueryString(name) {
-        let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-        let r = window.location.search.substr(1).match(reg);
-        if (r != null) {
-            return decodeURIComponent(r[2]);
-        };
-        return null;
-    }
 
     GM_addStyle ( `
         .z_panel{
