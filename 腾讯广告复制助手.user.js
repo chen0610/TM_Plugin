@@ -237,6 +237,9 @@
                                             case 25101:
                                                 msg = '复制操作太频繁，稍后再试！'
                                                 break;
+                                            case 1530000:
+                                                msg = '创意服务系统繁忙，请稍后重试'
+                                                break;
                                             default:
                                                 break;
                                         }
