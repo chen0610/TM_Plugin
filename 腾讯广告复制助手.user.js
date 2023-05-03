@@ -242,11 +242,11 @@
                                             case 1530000:
                                                 msg = '创意服务系统繁忙，请稍后重试!'
                                                 break
-                                            case 36705:
+                                            case 36705 || 30000:
                                                 msg = '系统繁忙，请稍后重试!'
                                                 break
                                             case 40531:
-                                                msg = '广告名称已存在'
+                                                msg = '广告名称已存在!'
                                             default:
                                                 break
                                         }
