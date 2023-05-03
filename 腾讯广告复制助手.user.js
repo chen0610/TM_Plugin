@@ -111,6 +111,7 @@
                     return false
                 }
                 //开始复制
+                $(".op_btn").attr('disabled',true) //防止多次点击
                 if($('.log_content p').length > 300){
                     $('.log_content').empty()
                 }
@@ -168,10 +169,10 @@
                                             let result = '复制'+num+'条完毕！！！'
                                             $('.log_content').prepend(`<p>=================</p><p class="yellow">##`+result+`</p>`)
                                         }, 1000);
-                                        
                                         // GM_log(result)
                                         // unsafeWindow.alert(result)
                                     }
+                                    $(".op_btn").attr('disabled',false) 
                                 }else{
                                     GM_log("无结果",response)
                                 }
@@ -193,6 +194,7 @@
                     return false
                 }
                 //开始复制
+                $(".op_btn").attr('disabled',true) //防止多次点击
                 $('.log_panel').css({'display':'block'})
                 if($('.log_content p').length > 300){
                     $('.log_content').empty()
@@ -236,14 +238,17 @@
                                         switch (res["code"]) {
                                             case 25101:
                                                 msg = '复制操作太频繁，稍后再试！'
-                                                break;
+                                                break
                                             case 1530000:
                                                 msg = '创意服务系统繁忙，请稍后重试!'
-                                                break;
+                                                break
                                             case 36705:
                                                 msg = '系统繁忙，请稍后重试!'
+                                                break
+                                            case 40531:
+                                                msg = '广告名称已存在'
                                             default:
-                                                break;
+                                                break
                                         }
                                         let err_msg = `复制第`+i+`条错误【`+ res["code"] +`】,`+ msg
                                         $('.log_content').prepend(`<p class="red">#`+err_msg+`</p>`)
@@ -254,6 +259,9 @@
                                             let result = '复制'+customNum+'条完毕！！！'
                                             $('.log_content').prepend(`<p>=================</p><p class="yellow">##`+result+`</p>`)
                                         }, 1000);
+                                    }
+                                    if(i == customNum ){
+                                        $(".op_btn").attr('disabled',false)
                                     }
                                 }else{
                                     GM_log("无结果",response)
