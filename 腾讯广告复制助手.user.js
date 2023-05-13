@@ -134,51 +134,50 @@
                     
                     copy_options1.adgroup.adgroup_name = old_name +'-副本' + sn
                     let data = JSON.stringify(copy_options1)
-                    setTimeout(() => {
-                        GM_xmlhttpRequest({
-                            url: r_url,
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
-                            },
-                            data:data,
-                            responseType: "json",
-                            onload(response) {
-                                if ((response.status >= 200 && response.status < 300) || response.status == 304) {
-                                    GM_log('当前序号',i)
-                                    let res = response.response
-                                    GM_log('res',res)
-                                    if(res["code"] == 0){
-                                        $('.log_content').prepend(`<p>#第`+i+`条数据复制完毕！</p>`)
-                                    }else{
-                                        let msg = '未知错误!'
-                                        switch (res["code"]) {
-                                            case 25101:
-                                                msg = '复制操作太频繁，稍后再试！'
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                        let err_msg = `复制第`+i+`条错误【`+ res["code"] +`】,`+ msg
-                                        $('.log_content').prepend(`<p class="red">#`+err_msg+`</p>`)
-                                    }
-                                    
-                                    if(i == num && res["code"] == 0){
-                                        setTimeout(() => {
-                                            let result = '复制'+num+'条完毕！！！'
-                                            $('.log_content').prepend(`<p>=================</p><p class="yellow">##`+result+`</p>`)
-                                        }, 1000);
-                                        // GM_log(result)
-                                        // unsafeWindow.alert(result)
-                                    }
-                                    $(".op_btn").attr('disabled',false) 
+                    GM_xmlhttpRequest({
+                        url: r_url,
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
+                        },
+                        data:data,
+                        responseType: "json",
+                        onload(response) {
+                            if ((response.status >= 200 && response.status < 300) || response.status == 304) {
+                                GM_log('当前序号',i)
+                                let res = response.response
+                                GM_log('res',res)
+                                if(res["code"] == 0){
+                                    $('.log_content').prepend(`<p>#第`+i+`条数据复制完毕！</p>`)
                                 }else{
-                                    GM_log("无结果",response)
+                                    let msg = '未知错误!'
+                                    switch (res["code"]) {
+                                        case 25101:
+                                            msg = '复制操作太频繁，稍后再试！'
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    let err_msg = `复制第`+i+`条错误【`+ res["code"] +`】,`+ msg
+                                    $('.log_content').prepend(`<p class="red">#`+err_msg+`</p>`)
                                 }
-                            },
-                        });
-                    }, i*150);
+                                
+                                if(i == num && res["code"] == 0){
+                                    setTimeout(() => {
+                                        let result = '复制'+num+'条完毕！！！'
+                                        $('.log_content').prepend(`<p>=================</p><p class="yellow">##`+result+`</p>`)
+                                    }, 1000);
+                                    // GM_log(result)
+                                    // unsafeWindow.alert(result)
+                                }
+                                $(".op_btn").attr('disabled',false) 
+                            }else{
+                                GM_log("无结果",response)
+                            }
+                        },
+                    });
+
                     
                     
                 }
@@ -187,7 +186,7 @@
             //自定义复制
             unsafeWindow.goCustomCopy = function() {
                 customNum = $('#CustomNum').val()
-                let step = 2000 //复制时间间隔,默认2秒
+                let step = 2000 //复制时间间隔,默认1.5秒
                 // GM_log('输入框的值',customNum)
                 if(copy_options == ''){
                     unsafeWindow.alert('###没有获取到数据包！请先提交复制一条数据###')
@@ -242,7 +241,16 @@
                                             case 1530000:
                                                 msg = '创意服务系统繁忙，请稍后重试!'
                                                 break
-                                            case 36705 || 30000:
+                                            case 36705:
+                                                msg = '系统繁忙，请稍后重试!'
+                                                break
+                                            case 30000:
+                                                msg = '系统繁忙，请稍后重试!'
+                                                break
+                                            case 10000:
+                                                msg = '系统繁忙，请稍后重试!'
+                                                break
+                                            case 31213:
                                                 msg = '系统繁忙，请稍后重试!'
                                                 break
                                             case 40531:
@@ -268,7 +276,7 @@
                                 }
                             },
                         });
-                    }, i*step);
+                    }, (i-1)*step);
                 }
             }
 
