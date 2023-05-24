@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         腾讯广告复制助手
-// @version      0.21
+// @version      0.22
 // @description  腾讯广告复制助手
 // @author       Longway
 // @match        https://ad.qq.com/atlas/*
@@ -42,7 +42,6 @@
                         <div class="log_content">
                         </div> 
                     </div>`
-    
     //根据url显示不同功能
     function handleCopy(){
         //请求参数
@@ -185,6 +184,7 @@
             }
             //自定义复制
             unsafeWindow.goCustomCopy = function() {
+                document.title="开始复制..."
                 customNum = $('#CustomNum').val()
                 let step = 2000 //复制时间间隔,默认1.5秒
                 // GM_log('输入框的值',customNum)
@@ -228,10 +228,12 @@
                             onload(response) {
                                 if ((response.status >= 200 && response.status < 300) || response.status == 304) {
                                     GM_log('当前序号',i)
+                                    
                                     let res = response.response
                                     GM_log('res',res)
                                     if(res["code"] == 0){
                                         $('.log_content').prepend(`<p>#第`+i+`条数据复制完毕！</p>`)
+                                        document.title=`复制进度：`+i+`/`+customNum
                                     }else{
                                         let msg = '未知错误!'
                                         switch (res["code"]) {
@@ -270,6 +272,7 @@
                                     }
                                     if(i == customNum ){
                                         $(".op_btn").attr('disabled',false)
+                                        document.title="复制完毕！"
                                     }
                                 }else{
                                     GM_log("无结果",response)
